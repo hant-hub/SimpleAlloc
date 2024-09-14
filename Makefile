@@ -14,10 +14,10 @@ INC_DIRS := ./include
 
 INC_FLAGS := $(addprefix -I, $(INC_DIRS))
 
-CFLAGS := $(INC_FLAGS) -MMD -MP
+CFLAGS := $(INC_FLAGS) -g -MMD -MP
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+	$(CXX) $(OBJS) -g -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)

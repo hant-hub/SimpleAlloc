@@ -9,6 +9,8 @@ typedef struct {
 } _sa_arena_direct;
 
 typedef _sa_arena_direct* _sa_arena;
+size_t sa_arena_overhead = sizeof(_sa_arena_direct);
+
 
 
 void* sa_arena_create(alloc_func allocator, size_t cap) {
@@ -54,4 +56,14 @@ void* sa_arena_calloc(sa_arena a, size_t num, size_t elem) {
 void sa_arena_destroy(free_func allocator, sa_arena a) {
     _sa_arena held = a;
     (*allocator)(held);
+}
+
+void sa_arena_reset(sa_arena a) {
+    _sa_arena arena = a;
+    arena->top = 0;
+}
+
+size_t sa_arena_capacity(sa_arena a) {
+    _sa_arena arena = a;
+    return arena->capacity - arena->top;
 }
