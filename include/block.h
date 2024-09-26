@@ -1,19 +1,19 @@
 #ifndef SA_BLOCK_H
 #define SA_BLOCK_H
+#include "common.h"
 #include <stdint.h>
-#include <stdlib.h>
 
 typedef void* sa_block_allocator;
 
 extern size_t sa_block_overhead;
 
 
-sa_block_allocator sa_block_create();
+sa_block_allocator sa_block_create(alloc_func f, size_t size);
 sa_block_allocator sa_block_create_e();
-void* sa_block_malloc();
+void* sa_block_malloc(sa_block_allocator a, size_t size);
 void* sa_block_calloc();
-void sa_block_free();
-void sa_block_destroy();
+void sa_block_free(sa_block_allocator b, void* ptr);
+void sa_block_destroy(sa_block_allocator a, free_func f);
 
 
 

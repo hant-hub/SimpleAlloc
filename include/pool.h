@@ -1,5 +1,5 @@
-#ifndef SA_BLOCK_H
-#define SA_BLOCK_H
+#ifndef SA_POOL_H
+#define SA_POOL_H
 #include "common.h"
 #include <stdint.h>
 

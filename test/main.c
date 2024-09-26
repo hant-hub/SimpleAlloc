@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "arena.h"
 #include "pool.h"
+#include "block.h"
 
 
 void fake_free(void* a) {
@@ -8,6 +9,8 @@ void fake_free(void* a) {
 
 
 int main() {
+
+    /*
     //arena test
     void* buf = malloc(101 * sizeof(int) + sa_arena_overhead);
     sa_arena a = sa_arena_create_e(buf, 101 * sizeof(int));
@@ -58,6 +61,33 @@ int main() {
         printf("\n");
     }
     printf("%ld\n", sa_pool_capacity(p));
+    */
+
+
+    sa_block_allocator b = sa_block_create(malloc, 100000);
+
+    char* strings[10];
+    for (int i = 0; i < 10; i++) {
+        strings[i] = sa_block_malloc(b, 1);
+        strings[i][0] = i;
+    }
+
+    for (int i = 0; i < 10; i++) {
+        printf("%d", strings[i][0]);
+    }
+    printf("\n");
+
+    for (int i = 0; i < 10; i++) {
+        sa_block_free(b, strings[i]);
+    }
+
+
+    void* t = sa_block_malloc(b, 100000);
+    void* w = sa_block_malloc(b, 1);
+    printf("t: 0x%lx\nw: 0x%lx\n", (long)t, (long)w);
+
+    sa_block_destroy(b, free);
+
 
 
     return 0;
