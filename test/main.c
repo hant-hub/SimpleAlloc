@@ -10,6 +10,7 @@ void fake_free(void* a) {
 
 int main() {
 
+    
     /*
     //arena test
     void* buf = malloc(101 * sizeof(int) + sa_arena_overhead);
@@ -35,6 +36,7 @@ int main() {
 
     sa_arena_destroy(free, a);
 
+   
 
     //pool test
     //sa_pool_allocator p = sa_pool_create(malloc, 16, 10); 
@@ -64,6 +66,7 @@ int main() {
     */
 
 
+    
     sa_block_allocator b = sa_block_create(malloc, 100000);
 
     char* strings[10];
@@ -87,6 +90,7 @@ int main() {
     printf("t: 0x%lx\nw: 0x%lx\n", (long)t, (long)w);
 
     sa_block_destroy(b, free);
+    
 
 
 

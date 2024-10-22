@@ -1,5 +1,6 @@
 #include "block.h"
 #include "common.h"
+#include <string.h>
 
 #define BLOCK_LENGTH_MASK ~BLOCK_STATUS_MASK
 #define BLOCK_ALIGN _Alignof(long)
@@ -35,17 +36,27 @@ sa_block_allocator sa_block_create(alloc_func f, size_t size) {
         .prev = NULL,
         .size = size - sa_block_overhead
     };
-    printf("full size: %ld\n", size - sa_block_overhead);
 
     return a;
 }
-sa_block_allocator sa_block_create_e() {
-    return NULL;
+sa_block_allocator sa_block_create_e(void* buf, size_t size) {
+    size -= sa_block_overhead + BLOCK_ALIGN;
+    size += size % BLOCK_ALIGN;
+
+    block_main a = buf;
+
+    a->head = (header*)a->mem;
+    *(a->head) = (header) {
+        .next = NULL,
+        .prev = NULL,
+        .size = size - sa_block_overhead
+    };
+
+    return a;
 }
 void* sa_block_malloc(sa_block_allocator a, size_t size) {
     //size += sa_block_overhead;
     size += size % BLOCK_ALIGN;
-    printf("in size: %ld\n", size);
 
     block_main m = a;
     header* head = m->head;
@@ -72,7 +83,6 @@ void* sa_block_malloc(sa_block_allocator a, size_t size) {
             .next = found->next
         };
         found->size = size;
-        printf("out size: %ld\n", found->size);
 
         if (found->next) found->next->prev = new;
         if (found->prev) found->prev->next = new;
@@ -86,8 +96,48 @@ void* sa_block_malloc(sa_block_allocator a, size_t size) {
 
     return ((active*)found) + 1;
 }
-void* sa_block_calloc() {
-    return NULL;
+void* sa_block_calloc(sa_block_allocator a, size_t num, size_t elem) {
+    size_t size = num * elem;
+    size += size % BLOCK_ALIGN;
+
+    block_main m = a;
+    header* head = m->head;
+
+    header* curr = head;
+    header* found = NULL;
+
+    while (curr) {
+        if (curr->size >= size) {
+            found = curr;
+            break;
+        }
+        curr = curr->next;
+    }
+
+    if (!found) return NULL;
+    
+    //split block
+    if (found->size - sizeof(header) > size) {
+        header* new = (header*)&found->mem[size];
+        *new = (header) {
+            .size = found->size - (size + sizeof(header)),
+            .prev = found->prev,
+            .next = found->next
+        };
+        found->size = size;
+
+        if (found->next) found->next->prev = new;
+        if (found->prev) found->prev->next = new;
+        else m->head = new;
+        return ((active*)found) + 1;
+    }
+
+    if (found->next) found->next->prev = found->prev;
+    if (found->prev) found->prev->next = found->next;
+    else m->head = found->next;
+
+    memset(((active*)found) + 1, 0, size);
+    return ((active*)found) + 1;
 }
 void sa_block_free(sa_block_allocator b, void* ptr) {
     block_main m = b;
@@ -129,7 +179,6 @@ void sa_block_free(sa_block_allocator b, void* ptr) {
 
     //merge
 
-    printf("unmerged: %ld\n", freed->size);
 
     header* merged = NULL;
 
@@ -157,9 +206,9 @@ void sa_block_free(sa_block_allocator b, void* ptr) {
         if (merged->next) merged->next->prev = merged;
         if (merged->prev) merged->prev->next = merged;
         else m->head = merged;
-        printf("merged: %ld\n", merged->size);
     }
 }
 void sa_block_destroy(sa_block_allocator a, free_func f) {
-    f(a);
+    if (f)
+        f(a);
 }
