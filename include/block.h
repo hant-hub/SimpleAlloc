@@ -1,6 +1,6 @@
 #ifndef SA_BLOCK_H
 #define SA_BLOCK_H
-#include "common.h"
+#include "alloc.h"
 #include <stdint.h>
 
 

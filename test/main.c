@@ -11,7 +11,7 @@ void fake_free(void* a) {
 int main() {
 
     
-    /*
+    
     //arena test
     void* buf = malloc(101 * sizeof(int) + sa_arena_overhead);
     sa_arena a = sa_arena_create_e(buf, 101 * sizeof(int));
@@ -63,7 +63,7 @@ int main() {
         printf("\n");
     }
     printf("%ld\n", sa_pool_capacity(p));
-    */
+    
 
 
     

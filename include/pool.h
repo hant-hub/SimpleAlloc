@@ -1,6 +1,6 @@
 #ifndef SA_POOL_H
 #define SA_POOL_H
-#include "common.h"
+#include "alloc.h"
 #include <stdint.h>
 
 #define BLOCK_ALIGN 8

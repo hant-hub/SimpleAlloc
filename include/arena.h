@@ -1,7 +1,7 @@
 #ifndef SA_ARENA_H
 #define SA_ARENA_H
 #include <stdint.h>
-#include "common.h"
+#include "alloc.h"
 
 
 typedef void* sa_arena;

@@ -8,7 +8,8 @@ typedef struct {
     void (*free)(void*, void*);
 }sa_allocator;
 
-
+typedef void*(*alloc_func)(size_t);
+typedef void(*free_func)(void*);
 
 
 
